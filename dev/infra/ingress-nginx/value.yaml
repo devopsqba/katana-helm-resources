@@ -490,6 +490,7 @@ controller:
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-name: katana-eks-dev-nlb
       service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-0819639f568be1f0b,subnet-02af330d17b2941b5
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     # -- Labels to be added to both controller services.
     labels: {}
     # -- Type of the external controller service.

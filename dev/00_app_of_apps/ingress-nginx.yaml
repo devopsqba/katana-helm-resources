@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aws-lb-controller
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://aws.github.io/eks-charts
+    targetRevision: 1.11.0 # Specify the version you want to use
+    chart: aws-load-balancer-controller
+    helm:
+      values: |
+        clusterName: your-cluster-name
+        region: us-west-2 # Set your AWS region
+        vpcId: vpc-your-vpc-id
+        serviceAccount:
+          create: true
+          name: aws-load-balancer-controller # Or use an existing service account
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system # Deploying the AWS LB Controller in kube-system is common
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true

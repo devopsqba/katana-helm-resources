@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/b1beta1
+kind: Kustomization
+
+resources:
+  - 00_app_of_apps/aws-load-balancer-controller.yaml
+  - 00_app_of_apps/ingress-nginx.yaml

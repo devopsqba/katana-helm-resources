@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-ingress-aws-lb-controller
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    targetRevision: 4.1.2 # You can specify a different version
+    chart: ingress-nginx
+    helm:
+      values: |
+        controller:
+          replicaCount: 2
+          ingressClassResource:
+            name: nginx
+          service:
+            enabled: true
+            type: LoadBalancer  # AWS LoadBalancer will be used here
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-type: "nlb"  # Optionally specify the load balancer type
+          # Additional configurations if needed for NGINX Ingress
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx # Specify the namespace where NGINX Ingress will be deployed
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true

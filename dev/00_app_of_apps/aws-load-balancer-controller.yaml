@@ -1,29 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx-ingress-aws-lb-controller
+  name: aws-load-balancer-controller
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://kubernetes.github.io/ingress-nginx
-    targetRevision: 4.1.2 # You can specify a different version
-    chart: ingress-nginx
-    helm:
-      values: |
-        controller:
-          replicaCount: 2
-          ingressClassResource:
-            name: nginx
-          service:
-            enabled: true
-            type: LoadBalancer  # AWS LoadBalancer will be used here
-            annotations:
-              service.beta.kubernetes.io/aws-load-balancer-type: "nlb"  # Optionally specify the load balancer type
-          # Additional configurations if needed for NGINX Ingress
+  sources:
+    - repoURL: https://aws.github.io/eks-charts
+      targetRevision: 1.11.0 # Specify the version you want to use
+      chart: aws-load-balancer-controller
+      helm:
+        valueFiles:
+          - $values/dev/infra/aws-load-balancer-controller/value.yaml
+    - repoURL: git@github.com:devopsqba/katana-helm-resources.git
+      targetRevision: main
+      ref: values
+
   destination:
     server: https://kubernetes.default.svc
-    namespace: ingress-nginx # Specify the namespace where NGINX Ingress will be deployed
+    namespace: kube-system # Deploying the AWS LB Controller in kube-system is common
   syncPolicy:
     automated:
       prune: true
